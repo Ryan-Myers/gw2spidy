@@ -2,6 +2,7 @@
 use GW2Spidy\Util\CurlRequest;
 use GW2Spidy\TradingPostSpider;
 use GW2Spidy\DB\ItemQuery;
+use GW2Spidy\DB\Item;
 
 ini_set('memory_limit', '1G');
 
@@ -64,7 +65,12 @@ foreach($data['items'] as $item_id) {
                             'img'               => "{$render_url}/{$item['icon_file_signature']}/{$item['icon_file_id']}.png",
                             'rarity_word'       => $item['rarity']);
         
-        $itemQuery = ItemQuery::create()->findPK($item_id);       
+        $itemQuery = ItemQuery::create()->findPK($item_id);
+        
+        if ($itemQuery === null) {
+            $itemQuery = new Item();
+        }        
+        
         $itemQuery->fromArray($itemData, \BasePeer::TYPE_FIELDNAME);
         $itemQuery->save();
     } catch (Exception $e) {
